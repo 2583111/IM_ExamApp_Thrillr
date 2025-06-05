@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; 
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Authorization/AuthContext';
 import { useReviews } from '../Authorization/ReviewContext';
 import ReviewForm from '../Components/ReviewForm';
@@ -9,26 +9,28 @@ import '../Styling/DescriptionPage.css';
 const API_KEY  = '680c759ca5b3d7e7b323f7c6c646367b';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
-export default function MovieDescriptionPage() {
+export default function SeriesDescriptionPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser, isAuthenticated } = useAuth();
   const { getReviewsForItem } = useReviews();
-  const reviews = getReviewsForItem('movie', id);
+  const reviews = getReviewsForItem('series', id);
 
-  const [movie, setMovie]           = useState(null);
+  const [series, setSeries]         = useState(null);
   const [cast, setCast]             = useState([]);
   const [trailerKey, setTrailerKey] = useState(null);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState('');
+
   const [inWatchlist, setInWatchlist] = useState(false);
   const [inCompleted, setInCompleted] = useState(false);
 
+  // Fetch series details
   useEffect(() => {
     async function fetchDetails() {
       setLoading(true);
       try {
-        const url = `${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits,videos`;
+        const url = `${BASE_URL}/tv/${id}?api_key=${API_KEY}&append_to_response=credits,videos`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
@@ -37,25 +39,22 @@ export default function MovieDescriptionPage() {
         const yt = data.videos.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
         if (yt) setTrailerKey(yt.key);
 
-        const directorJob = data.credits.crew.find(c => c.job === 'Director');
-        const director    = directorJob ? directorJob.name : 'Unknown';
+        const creators = data.created_by?.map(c => c.name).join(', ') || 'Unknown';
 
-        setMovie({
-          id:           data.id,
-          title:        data.title,
-          overview:     data.overview,
-          tagline:      data.tagline,
-          poster_path:  data.poster_path,
-          release_date: data.release_date,
-          release_year: data.release_date?.slice(0, 4) || '',
-          runtime:      data.runtime,
-          genres:       data.genres.map(g => g.name),
-          director,
-          vote_average: data.vote_average,
+        setSeries({
+          id:            data.id,
+          name:          data.name,
+          overview:      data.overview,
+          first_air_date: data.first_air_date,
+          first_year:    data.first_air_date?.slice(0, 4) || '',
+          genres:        data.genres.map(g => g.name),
+          creators,
+          vote_average:  data.vote_average,
+          poster_path:   data.poster_path
         });
       } catch (e) {
         console.error(e);
-        setError('Could not load movie details.');
+        setError('Could not load series details.');
       } finally {
         setLoading(false);
       }
@@ -63,131 +62,124 @@ export default function MovieDescriptionPage() {
     fetchDetails();
   }, [id]);
 
+  // Check if already in watchlist/completed
   useEffect(() => {
-    if (!currentUser || !movie) {
-      setInWatchlist(false);
-      setInCompleted(false);
-      return;
-    }
+    if (!currentUser || !series) return;
     try {
-      const wlRaw   = localStorage.getItem(`watchlist-movie::${currentUser}`) || '[]';
-      const compRaw = localStorage.getItem(`completed-movie::${currentUser}`) || '[]';
+      const wlRaw   = localStorage.getItem(`watchlist-series::username`) || '[]';
+      const compRaw = localStorage.getItem(`completed-series::${currentUser}`) || '[]';
       const wl   = JSON.parse(wlRaw);
       const comp = JSON.parse(compRaw);
-      setInWatchlist(wl.some(i => i.id === movie.id));
-      setInCompleted(comp.some(i => i.id === movie.id));
+      setInWatchlist(wl.some(i => i.id === series.id));
+      setInCompleted(comp.some(i => i.id === series.id));
     } catch {
       setInWatchlist(false);
       setInCompleted(false);
     }
-  }, [currentUser, movie]);
+  }, [currentUser, series]);
 
+  // Add to watchlist
   const handleAddToWatchlist = () => {
     if (!isAuthenticated) {
       alert('You must be logged in to add to your watchlist.');
       return;
     }
-    const key = `watchlist-movie::${currentUser}`;
+    const key = `watchlist-series::${currentUser}`;
     const raw = localStorage.getItem(key) || '[]';
     let arr;
     try {
       arr = JSON.parse(raw);
-      if (!Array.isArray(arr)) arr = [];
     } catch {
       arr = [];
     }
-    // Prevent duplicates
-    if (arr.some(i => i.id === movie.id)) {
+    if (arr.some(i => i.id === series.id)) {
       alert('Already in your watchlist.');
       return;
     }
     const newItem = {
-      id:           movie.id,
-      type:         'movie',
-      poster_path:  movie.poster_path,
-      title:        movie.title,
+      id:           series.id,
+      type:         'series',
+      poster_path:  series.poster_path,
+      name:         series.name,
     };
     arr.unshift(newItem);
     localStorage.setItem(key, JSON.stringify(arr));
     setInWatchlist(true);
   };
 
+  // Mark as completed
   const handleMarkCompleted = () => {
     if (!isAuthenticated) {
       alert('You must be logged in to mark as completed.');
       return;
     }
-    const key = `completed-movie::${currentUser}`;
+    const key = `completed-series::${currentUser}`;
     const raw = localStorage.getItem(key) || '[]';
     let arr;
     try {
       arr = JSON.parse(raw);
-      if (!Array.isArray(arr)) arr = [];
     } catch {
       arr = [];
     }
-    if (arr.some(i => i.id === movie.id)) {
+    if (arr.some(i => i.id === series.id)) {
       alert('Already in your completed list.');
       return;
     }
     const newItem = {
-      id:           movie.id,
-      type:         'movie',
-      poster_path:  movie.poster_path,
-      title:        movie.title,
+      id:           series.id,
+      type:         'series',
+      poster_path:  series.poster_path,
+      name:         series.name,
     };
     arr.unshift(newItem);
     localStorage.setItem(key, JSON.stringify(arr));
     setInCompleted(true);
   };
 
-  if (loading) return <p style={{ padding: '1rem' }}>Loading…</p>;
-  if (error)   return <p style={{ padding: '1rem', color: 'red' }}>{error}</p>;
-  if (!movie)  return <p style={{ padding: '1rem' }}>Movie not found.</p>;
+  if (loading)  return <p style={{ padding: '1rem' }}>Loading…</p>;
+  if (error)    return <p style={{ padding: '1rem', color: 'red' }}>{error}</p>;
+  if (!series)  return <p style={{ padding: '1rem' }}>Series not found.</p>;
 
   return (
     <div>
       <div className="description-container">
-        {/* Poster*/}
+        {/* Poster */}
         <div className="description-poster">
-          {movie.poster_path ? (
+          {series.poster_path ? (
             <img
-              src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-              alt={movie.title}
+              src={`https://image.tmdb.org/t/p/w300${series.poster_path}`}
+              alt={series.name}
             />
           ) : (
-            <div
-              style={{
-                width: '200px',
-                height: '300px',
-                background: '#eee',
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#aaa',
-              }}
-            >
+            <div style={{
+              width: '200px',
+              height: '300px',
+              background: '#eee',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#aaa'
+            }}>
               No Image
             </div>
           )}
         </div>
 
-        {/* Details + Buttons*/}
+        {/* Details + Buttons */}
         <div className="description-details">
           <div>
             <div className="description-title">
-              {movie.title} {movie.release_year && `(${movie.release_year})`}
+              {series.name} {series.first_year && `(${series.first_year})`}
             </div>
             <div className="details-row">
-              <div className="detail-item">Director: {movie.director}</div>
-              <div className="detail-item">Runtime: {movie.runtime} min</div>
-              <div className="detail-item">Genres: {movie.genres.join(', ')}</div>
-              <div className="detail-item">⭐ {movie.vote_average.toFixed(1)}</div>
+              <div className="detail-item">Creators: {series.creators}</div>
+              <div className="detail-item">Genres: {series.genres.join(', ')}</div>
+              <div className="detail-item">⭐ {series.vote_average.toFixed(1)}</div>
             </div>
           </div>
 
-          <div className="description-text">{movie.overview}</div>
+          <div className="description-text">{series.overview}</div>
 
           <div className="buttons-row">
             {inWatchlist ? (
@@ -195,6 +187,7 @@ export default function MovieDescriptionPage() {
             ) : (
               <button onClick={handleAddToWatchlist}>Add to Watchlist</button>
             )}
+
             {inCompleted ? (
               <button onClick={() => navigate('/completed')}>Completed List</button>
             ) : (
@@ -203,7 +196,7 @@ export default function MovieDescriptionPage() {
           </div>
         </div>
 
-        {/* Trailer*/}
+        {/* Trailer  */}
         {trailerKey && (
           <div className="trailer-container">
             <iframe
@@ -227,18 +220,16 @@ export default function MovieDescriptionPage() {
                   alt={c.name}
                 />
               ) : (
-                <div
-                  style={{
-                    width: '120px',
-                    height: '160px',
-                    background: '#ccc',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#666',
-                  }}
-                >
+                <div style={{
+                  width: '120px',
+                  height: '160px',
+                  background: '#ccc',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#666'
+                }}>
                   No Photo
                 </div>
               )}
@@ -254,10 +245,10 @@ export default function MovieDescriptionPage() {
       <div className="review-section">
         <h2>Reviews</h2>
         <div className="review-form">
-          <ReviewForm parentType="movie" parentId={id} />
+          <ReviewForm parentType="series" parentId={id} />
         </div>
         <div className="review-list">
-          <ReviewList parentType="movie" parentId={id} reviews={reviews} />
+          <ReviewList parentType="series" parentId={id} reviews={reviews} />
         </div>
       </div>
     </div>

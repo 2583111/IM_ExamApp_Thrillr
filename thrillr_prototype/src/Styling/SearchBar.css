@@ -1,0 +1,51 @@
+.navbar {
+  display: flex;
+  background: transparent; /* no background */
+  padding: 0;              /* no extra padding */
+  justify-content: center; /* center the input horizontally */
+}
+
+/* Container around the input so we can position the icon */
+.search-wrapper {
+  position: relative;
+  flex: 1 1 400px;       /* allow it to grow/shrink, but start at 400px (instead of 200px) */
+  max-width: 800px;      /* doubled from 300px to ~600px */
+  
+}
+
+/* The input itself */
+.search-input {
+  width: 100%;
+  padding: 0.8rem 2rem;      /* doubled vertical padding (0.4→0.8) and horizontal (1→2) */
+  border-radius: 999px;      /* fully rounded edges */
+  border: none;              /* no border */
+  background-color: #c00;    /* red background */
+  color: #fff;               /* white text */
+  font-size: 1.8rem;         /* doubled from 0.9rem to ~1.8rem */
+  outline: none;
+  transition: background 0.2s;
+  padding-right: 3.5rem;     /* extra space on the right for the icon (was 2rem) */
+}
+
+/* Slightly brighter red when focused */
+.search-input:focus {
+  background-color: #e00;
+}
+
+/* The little icon on the right inside the search field */
+.search-icon {
+  position: absolute;
+  right: 1rem;               /* moved a bit further right to match larger input */
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;              /* doubled from 16px to 32px */
+  width: 32px;               /* match height */
+  pointer-events: none;      
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+/* Hide the icon when the input is focused */
+.search-input:focus + .search-icon {
+  opacity: 0;
+}

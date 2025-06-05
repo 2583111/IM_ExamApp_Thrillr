@@ -1,0 +1,140 @@
+/* Container centered at max-width 800px */
+.lists-container {
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Each section wrapper */
+.list-section {
+  margin-top: 2rem;
+  position: relative;
+}
+
+/* Full-viewport-width title wrapper */
+.list-title-wrapper {
+  width: 100vw;           
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;     
+  margin-right: -50vw;    
+  background: red;
+  box-sizing: border-box;
+}
+
+/* The actual <h2> inside the wrapper */
+.list-title {
+  color: #fff;
+  padding: 0.75rem 1rem;  
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* When there’s no items in a list */
+.empty-text {
+  color: #666;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+/* Sub‐text under “Reviews & Discussions” */
+.subtext {
+  margin: 0.5rem 0 1rem 0;
+  color: #666;
+  text-align: center;
+}
+
+/* Horizontal scrolling container for MovieCard / SeriesCard */
+.horizontal-scroll {
+  display: flex;
+  gap: 2rem;           
+  overflow-x: auto;    
+  padding: 0.5rem 1rem;
+  margin-left: -1rem;  
+  margin-right: -1rem; 
+}
+
+/* Ensure the scroll container’s scrollbar is styled similarly (optional) */
+.horizontal-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.horizontal-scroll::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background: #444;
+}
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #ff4e4e;
+}
+
+/* Container for each button below a section */
+.button-container {
+  margin-top: 0.5rem;
+  text-align: center;   
+}
+
+/* Shared style for “View Full…” buttons */
+.view-button {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Smaller screens adjustments */
+@media (max-width: 768px) {
+  .horizontal-scroll {
+    gap: 1rem;          
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    padding: 0.5rem;
+  }
+
+  .view-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .list-title {
+    font-size: 1.25rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+
+/* ==== Reuse for Watchlist, CompletedList, Reviews And Comments List==== */
+
+/* Full-viewport-width title wrapper (same as in ListsPage.css) */
+.list-title-wrapper {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: red;
+  box-sizing: border-box;
+}
+
+/* The <h1> or <h2> inside the wrapper */
+.list-title {
+  color: #fff;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* If you need smaller font on narrower screens */
+@media (max-width: 768px) {
+  .list-title {
+    font-size: 1.25rem;
+    padding: 0.5rem 0.75rem;
+  }
+}

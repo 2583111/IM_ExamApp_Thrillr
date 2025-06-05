@@ -1,0 +1,115 @@
+/* — Backdrop covering entire screen — */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+/* — Sliding panel on the right with vertical gradient — */
+.sidebar-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(to top, #000000 0%, #d3d3d3 100%);
+  color: #ffffff;
+  padding: 1rem 0; 
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+/* — Close button (X) — */
+.sidebar-close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  align-self: flex-end;
+  cursor: pointer;
+  padding: 0.25rem 1rem;
+}
+
+/* — Container holding icon + username — */
+.sidebar-user-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  gap: 0.5rem;
+  margin: 0.5rem 1rem 1.5rem 1rem;
+}
+
+/* — Small circle placeholder for user icon — */
+.sidebar-user-icon {
+  width: 32px;
+  height: 32px;
+  background: #ccc;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* — Username text in grey box, centered — */
+.sidebar-username-text {
+  background: #777;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center; 
+  white-space: nowrap;
+}
+
+/* — Base style for normal links — */
+.sidebar-link,
+.sidebar-link-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 0;
+  margin: 0.25rem 0;             
+  background: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  text-align: center;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-sizing: border-box;
+}
+
+/* — Hover state: invert background/text — */
+.sidebar-link:hover,
+.sidebar-link-button:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* — “Log Out” button — */
+.sidebar-logout-btn {
+  display: block;
+  width: 100%;
+  margin: 0.25rem 0 0; 
+  padding: 0.75rem 0;
+  background: #cc0000;
+  color: #ffffff;
+  border: none;
+  text-align: center;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+}
+
+/* — Hover for “Log Out” — */
+.sidebar-logout-btn:hover {
+  background: #a30000;
+}
